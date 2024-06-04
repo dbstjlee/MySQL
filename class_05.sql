@@ -1,5 +1,5 @@
 -- 테이블을 삭제하는 명령
--- drop table student;
+drop table student;
 
 -- 테이블 생성 시에 default(디폴트) 값을 제약 설정하는 방법 
 create table student(

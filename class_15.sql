@@ -27,3 +27,4 @@ create table tb_registration(
     foreign key(class_id) references tb_class(class_id)
 );
 desc tb_registration;
+

@@ -1,5 +1,5 @@
 select * from student;
--- delete from student;
+delete from student;
 
 INSERT INTO student (student_id, name, grade, major)
 VALUES
