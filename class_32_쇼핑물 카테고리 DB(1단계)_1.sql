@@ -38,4 +38,4 @@ select p.product_name, p.price, p.size, p.color
 from tb_products as p
 join tb_categories as c 
 on p.category_id = c.category_id
-where c.category_name = '외투';
+where c.category_name = '셔츠';

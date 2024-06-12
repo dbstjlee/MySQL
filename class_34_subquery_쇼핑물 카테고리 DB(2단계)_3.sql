@@ -58,7 +58,6 @@ select * from tb_categories where category_name = '팬츠' and parent_id = 2;
 -- 여성 팬츠의 parent_id = 2만 출력됨.
 select parent_id from tb_categories where category_name = '팬츠' and parent_id = 2;
 
-
 -- 여성 팬츠의  category_id = 5만 출력됨.
 select category_id from tb_categories where category_name = '팬츠' and parent_id = 2;
 

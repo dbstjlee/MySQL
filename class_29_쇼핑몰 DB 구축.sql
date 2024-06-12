@@ -1,4 +1,3 @@
-
 -- 쇼핑몰 서비스의 DB 구축
 
  create table User(
@@ -18,6 +17,7 @@ create table Product(
     stock int default 0,
     created_at timestamp default current_timestamp
 );
+
 
 create table `Order`(
 	id int primary key auto_increment,  -- 주문 id(PK)
@@ -42,7 +42,7 @@ drop table `Order`;
 desc Order_detail;
 desc `Order`;
 
-
+-- <조원들과의 예시 문제> order - orderdetail
 -- 유저측에서 정보를 받는 오더테이블 : 판매자측 에서 정보를 받는 오더테이블
 -- 유저 테이블과 물품 테이블에서 기본적인 정보는 받아 오게 설계.
 -- 1:n 관계 
