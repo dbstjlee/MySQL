@@ -13,6 +13,7 @@ from dept_emp as d
 inner join employees as e
 on d.emp_no = e.emp_no;
 
+-- 1일 1쿼리
 -- 가장 많은 연봉을 받은 임직원의 번호, 이름, 성별을 조회하시오. 
 select em.emp_no, em.first_name, em.gender, max(salary) as salary
 from employees as em

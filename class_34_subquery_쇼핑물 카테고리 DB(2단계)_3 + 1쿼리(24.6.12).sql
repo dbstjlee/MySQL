@@ -146,53 +146,50 @@ select * from tb_products;
 
 -- 문제 3. 특정 색상의 상품이 있는 모든 카테고리 조회
 -- 예를 들어, 퍼플 상품이 있는 모든 카테고리를 조회하는 쿼리 
-select p.product_name, p.price, p.size, p.color, c.parent_id
+select c.category_name, p.product_name, p.price, p.size, p.color, c.parent_id
 from tb_products as p
 join tb_categories as c
 on p.category_id = c.category_id
 where p.color = '퍼플';
 
 
--- 문제 4. 가장 비싼 상품을 가진 카테고리 찾기(서브쿼리 사용할 필요 없음)
--- 각 카테고리 중 가장 비싼 상품을 가지고 있는 카테고리와 그 상품의 정보를 조회하는 쿼리
-select p.product_name, Max(p.price), p.size, p.color
+-- 1단계 
+-- 결과집합에서 중복 제거할 때 distinct
+select distinct c.category_name
 from tb_products as p
 join tb_categories as c
 on p.category_id = c.category_id
-group by p.product_name
-having Max(p.price) >= 100000;
+where p.color = '샤인' ;
+
+
+-- 문제 4. 가장 비싼 상품을 가진 카테고리 찾기(서브쿼리 사용할 필요 없음)
+-- 각 카테고리 중 가장 비싼 상품을 가지고 있는 카테고리와 그 상품의 정보를 조회하는 쿼리
+select *, Max(p.price) as max_price, 
+(select product_name from tb_products where product_id = 1) as a -- 스칼라 서브쿼리
+from tb_products p
+join tb_categories c
+on p.category_id = c.category_id
+group by c.category_name
+order by Max(p.price) desc
+limit 2;
+
 
 -- subquery
--- 3가지 중 스칼라? 말고는 사용 가능
+-- 3가지 중 스칼라 말고는 사용 가능
 -- 장점: 코드 분석이 간결하고 가독성 있음.
 -- 단점: 속도 느림.
 -- join으로 대부분 대체 가능, 안 되는 경우 서브쿼리 사용
 
 
 -- 1일 1쿼리
-select * from titles where title = 'staff';
-select * from titles where title = 'Senior Engineer';
 select * from titles;
 select * from dept_emp;
 select * from departments;
 select * from salaries;
 select * from employees;
 
--- 다음에 써야지..
--- Engineer 직급 중 최고 연봉을 가진 직원 5명을 조회하시오.
-select t.title, e.emp_no, e.first_name, s.salary
-from titles as t
-join salaries as s
-on t.emp_no = s.emp_no
-join employees as e
-on e.emp_no = t.emp_no
-where t.title = 'Engineer'
-order by s.salary desc
-limit 5;
-
-
 -- 서브쿼리....
--- 부서 번호가 d009인 부서에서 재직중이며 매니저가 있는 직원을 조회하여라.(직원 번호, 이름, 부서명)
+-- 부서 번호가 d009인 부서에서 재직중이며 매니저인 직원을 조회하여라.(직원 번호, 이름, 부서명)
 -- 단, 서브쿼리를 사용하여 departments 테이블의 dept_name에 담아서 출력하여라.
 select e.emp_no,  e.first_name, d.dept_name
 from employees as e
