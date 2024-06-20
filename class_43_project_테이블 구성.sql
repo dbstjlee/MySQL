@@ -27,17 +27,20 @@ create table recruittable(
  
  create table reservationInfo(
     id int primary key auto_increment,
-    name varchar(30),
+    personId int,
     pay boolean not null,
-    foreign key(name) references reservationPersonInfo(name)
+    foreign key(personId) references reservationPersonInfo(personId)
 );
 
+
 create table reservationPersonInfo(
-    name varchar(30) not null primary key,
+	personId int primary key auto_increment,
+    name varchar(30) not null,
     licenseNum varchar(30) not null,
     licenseGrade enum('1종', '2종') not null,
     phoneNum varchar(30) not null unique
 );
+
 
 insert into carmanagement (carname, carid)
 values('아반떼', '48허2748'),
@@ -49,7 +52,8 @@ values('아반떼', '48허2748'),
 ('모델3', '52하3362'),
 ('넥쏘', '53호6642');
 
-insert into carinfo (carname, cartype, brand, priceperday, puel, needlicence)
+
+insert into carinfo (carname, brand, cartype, priceperday, puel, needlicence)
 values('아반떼', '현대', '준중형', 70000, '가솔린', '2종'),
 ('k3', '기아', '준중형', 70000, '가솔린', '2종'),
 ('쏘나타', '현대', '중형', 90000, '가스', '2종'),
@@ -60,18 +64,19 @@ values('아반떼', '현대', '준중형', 70000, '가솔린', '2종'),
 ('넥쏘', '현대', '중형', 110000, '수소', '2종');
 
 
-insert into reservationInfo(name, pay) 
-values('유재석', true),
-	  ('신동엽', true),
-      ('이영자', true),
-      ('전지현', true),
-      ('이병헌', true),
-      ('유재석', false),
-      ('신동엽', false),
-      ('이영자', true),
-      ('전지현', true),
-      ('이병헌', true),
-      ('유재석', true);
+insert into reservationInfo(personId, pay) 
+values(1, true),
+	  (2, true),
+      (3, true),
+      (4, true),
+      (5, true),
+      (1, false),
+      (2, false),
+      (3, true),
+      (4, true),
+      (5, true),
+      (1, true);
+
 
 insert into reservationPersonInfo(name, licenseNum, licenseGrade, phoneNum)
 values('유재석', '11-02-123456-02', '1종', '010-1111-1111'),
@@ -79,6 +84,7 @@ values('유재석', '11-02-123456-02', '1종', '010-1111-1111'),
 	  ('이영자', '13-09-456789-02', '2종', '010-3333-3333'),
 	  ('전지현', '20-14-123789-01', '2종', '010-5555-5555'),
 	  ('이병헌', '23-05-012045-02', '1종', '010-6666-6666');
+
 
 insert into recruittable(carid, id, rentDate, returnDate)
 values('47호4827', 1, '2024-05-10', '2024-05-28'),
@@ -102,33 +108,33 @@ select * from reservationPersonInfo;
 
 drop table carinfo;
 drop table carmanagement;
-drop table reservationInfo;
-drop table reservationPersonInfo;
 drop table recruittable;
-
+drop table reservationinfo;
+drop table reservationpersoninfo;
 
 -- 예약 번호로 예약 조회하는 쿼리
-SELECT ri.id, ri.name, cm.carname, ci.cartype, ci.brand, 
+SELECT ri.id, rp.name, cm.carname, ci.cartype, ci.brand, 
 ci.puel , rp.PhoneNum, re.rentDate, re.returnDate, 
 datediff(re.returnDate,re.rentDate)*ci.priceperday as totalprice, ri.pay as paymentOrNot /*결제 여부*/ 
 from reservationInfo as ri
-join reservationPersonInfo as rp on ri.name = rp.name
+join reservationPersonInfo as rp on ri.personid = rp.personid
 join recruittable as re on re.id = ri.id
 join carmanagement as cm on cm.carid = re.carid
 join carinfo as ci on ci.carname = cm.carname
 where ri.id = ?;
 
 -- 예약자 이름으로 예약 조회하는 쿼리예약자
-SELECT ri.id, ri.name, cm.carname, ci.cartype, ci.brand, 
+SELECT ri.id, rp.name, cm.carname, ci.cartype, ci.brand, 
 ci.puel , rp.PhoneNum, re.rentDate, re.returnDate, 
 datediff(re.returnDate,re.rentDate)*ci.priceperday as totalprice, ri.pay as paymentOrNot /*결제 여부*/
 from reservationInfo as ri
-join reservationPersonInfo as rp on ri.name = rp.name
+join reservationPersonInfo as rp on ri.personid = rp.personid
 join recruittable as re on re.id = ri.id
 join carmanagement as cm on cm.carid = re.carid
 join carinfo as ci on ci.carname = cm.carname
-where ri.name = ?
-order by re.rentDate;
+where rp.name = ?
+order by re.rentDate desc;
+
 
 -- 차량 id 를 입력 받았을 때 이미 그 차량이 예약이 잡혀있는 날짜 조회 쿼리 
 -- (달력, 반납일이 오늘보다 이전인 예약은 조회하지 않음 )
@@ -189,3 +195,56 @@ select cm.carname, ci.cartype, ci.brand, ci.puel, ci.needlicence, ci.priceperday
 from carmanagement as cm
 join carinfo as ci on cm.carname = ci.carname
 order by ci.priceperday desc;
+
+-- 예약 날짜 변경 쿼리 
+-- (대여일)
+UPDATE recruittable
+SET rentDate = ?
+WHERE id = ?;
+
+-- (반납일)
+UPDATE recruittable
+SET returnDate = ?
+WHERE id = ?;
+
+-- 예약 차량 변경 
+Update recruittable set carid = ?
+where id = ?;
+
+-- 예약 취소하기
+DELETE from recruittable
+WHERE id = ?;
+
+-- 예약 진행 쿼리
+-- 예약 1단계 (먼저 이름, 면허증 번호, 면허 등급(1종,2종) , 휴대전화 번호 를 클라이언트 한테 받아서 입력, 새 유저 생성
+-- 자바에서 방어코드 (phoneNum 으로 select 쿼리 보내서 next가 있으면 insert하지 않기 , 전화번호는 같은데 이름이 다른 경우 에러 메세지? 고민) 
+INSERT INTO reservationpersoninfo(name, licensenum, licensegrade, phoneNum) 
+values(?, ?, ?, ?);
+
+-- 롤백
+
+-- 1.5단계 auto increment 로 생성된 person id를 받아오기 , 재이용객이라면 기생성된 personid 받아오기
+select reservationpersoninfo.personid
+from reservationpersoninfo
+where phoneNum = ?; 
+
+-- 롤백
+
+-- 예약 2단계 (기존 입력받은 이름과 지불 여부를 입력함 , 여기 들어갈때 예약 id 생성)
+INSERT INTO reservationinfo(personId, pay)
+values(?,?);
+
+-- 롤백
+
+-- 예약 2.5단계 (입력받은 으로 예약 id를 받아옴)
+SELECT reservationinfo.id 
+FROM reservationinfo
+WHERE personid = ?
+order by reservationinfo.id desc
+limit 1;
+
+-- 롤백
+
+-- 예약 3단계 (예약 정보 입력) -- 예약할때 선택했던 차량 번호, 2.5단계에서 받아온 예약 id, 입력받은 대여일, 반납일
+INSERT INTO recruittable(carid, id, rentDate, returnDate)
+values(?, ?, ?, ?); 

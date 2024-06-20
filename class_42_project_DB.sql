@@ -69,7 +69,3 @@ join carmanagement as cm on cm.carid = rc.carid
 where dm.carid = '47호 4827';
 
 
-
-
-
-
