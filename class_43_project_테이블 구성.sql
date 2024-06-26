@@ -100,22 +100,218 @@ values('47호4827', 1, '2024-05-10', '2024-05-28'),
       ('53호6642', 11, '2024-05-01', '2024-05-03');
 
 
-select * from carmanagement;
+
+-- --------------------------------------------------------
+
+create table carinfo(
+    carname varchar(30) not null primary key,
+    brand varchar(30) not null,
+    cartype varchar(30) not null,
+    priceperday int not null,
+    puel enum('전기','수소','가스','디젤','가솔린'),
+    needlicence enum('1종','2종')
+    );
+    
+create table carmanagement(
+    carid varchar(30) not null primary key,
+    carname varchar(30),
+    foreign key(carname) references carinfo(carname)
+    );
+
+CREATE TABLE users (
+    username VARCHAR(15) PRIMARY KEY,
+    password VARCHAR(15) NOT NULL,
+    phonenum varchar(15) not null,
+    address varchar(30) not null,
+    email VARCHAR(30)  not null,
+    licenseGrade enum('1종', '2종') not null
+);
+
+alter table users add constraint unique(phonenum, email);
+
+CREATE TABLE reservation (
+    reservation_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(15) NOT NULL,
+    carid VARCHAR(30) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    FOREIGN KEY (username) REFERENCES users(username),
+    FOREIGN KEY (carid) REFERENCES carmanagement(carid)
+);
+
+
+
+insert into carinfo(carname, brand, cartype, priceperday, puel, needlicence)
+values ('아반떼', '현대', '준중형', 70000, '가솔린', '2종'),
+('K3', '기아', '준중형', 70000, '가솔린', '2종'),
+('쏘나타', '현대', '중형', 90000, '가스', '2종'),
+('K5', '기아', '중형', 90000, '가스', '2종'),
+('카니발', '기아', '대형', 130000, '디젤', '1종'),
+('스타렉스', '현대', '대형', 130000, '디젤', '1종'),
+('모델3', '테슬라', '중형', 150000, '전기', '2종'),
+('넥쏘', '현대', '중형', 110000, '수소', '2종');
+
+update carinfo set carname = 'K3' where carname = 'k3';
+
+
+insert into carmanagement(carid, carname)
+values ('48허2748', '아반떼'),
+('47호4827', 'K3'),
+('46하8247', '쏘나타'),
+('49허3814', 'K5'),
+('50호3827', '카니발'),
+('51하3942', '스타렉스'),
+('52하3362', '모델3'),
+('53호6642', '넥쏘');
+
+
+insert into users(username, password, phonenum, address, email, licenseGrade)
+values ('유재석', 'asdqwe', '010-1111-1111', '서울광역시 강서구', 'a@naver.com', '2종'),
+('신동엽', 'zxcasd', '010-2222-2222', '서울광역시 종로구' , 'b@naver.com', '2종'),
+('이영자', 'jkl123', '010-3333-3333', '부산광역시 부산진구', 'c@naver.com', '1종'),
+('전지현', 'uio123', '010-5555-5555', '부산광역시 연제구', 'd@naver.com', '2종'),
+('이병헌', 'bnm456', '010-6666-6666', '부산광연시 북구', 'e@naver.com', '1종'); 
+
+
+insert into users(username, password, phonenum, address, email, licenseGrade)
+values ('신동엽', 'zxcasd', '010-2222-2222', '서울특별시 종로구' , 'b@naver.com', '2종');
+
+insert into users(username, password, phonenum, address, email, licenseGrade)
+values ('유재석', 'asdqwe', '010-1111-1111', '서울특별시 강서구', 'a@naver.com', '2종');
+
+insert into reservation(username, carid, start_date, end_date)
+values('유재석', '47호4827', '2024-05-10', '2024-05-28'),
+('신동엽', '46하8247', '2024-04-20', '2024-04-30'), 
+('이영자', '51하3942', '2024-06-01', '2024-06-20'),
+('전지현', '49허3814', '2024-06-21', '2024-07-01'),
+('이병헌', '50호3827', '2024-06-05', '2024-06-17');
+
+
+desc users;
+desc reservation;
+desc carinfo;
+desc carmanagement;
+
+delete from reservation where username = '111';
+update users set address = '서울특별시 강서구' where username = '유재석';
+
+
+select * from users;
+select * from reservation;
 select * from carinfo;
-select * from recruittable;
-select * from reservationInfo;
-select * from reservationPersonInfo;
+select * from carmanagement;
 
-drop table carinfo;
-drop table carmanagement;
-drop table recruittable;
-drop table reservationinfo;
-drop table reservationpersoninfo;
 
--- 예약 번호로 예약 조회하는 쿼리
+
+-- username만 조회
+select username
+from users
+where username = '유재석';
+
+insert into reservation(username, carid, start_date, end_date)
+values('박태현', '47호4827', '2024-06-14', '2024-06-20'),
+('박보검', '48허2748', '2024-06-19', '2024-07-01'),
+('서치원', '53호6642', '2024-05-12', '2024-05-20');
+
+-- '이윤서', '46하8247', '2024-05-30', '2024-06-10'
+
+
+
+-- 로그인 --> 예약자 이름, 비밀번호로 로그인 하여 예약 조회하는 쿼리
+select u.username, r.carid, ci.carname, ci.brand, ci.cartype, ci.puel, ci.priceperday, u.licenseGrade, r.start_date, r.end_date
+from reservation as r
+join users as u
+on r.username = u.username
+join carmanagement as cm
+on cm.carid = r.carid
+join carinfo as ci
+on cm.carname = ci.carname
+where u.username = ? and u.password = ?;
+
+-- 차량이 정해져있을때 그 차량이 누가 언제부터 언제까지 빌리는지 조회 쿼리
+select u.username, r.start_date, r.end_date
+from carinfo as ci
+join carmanagement as cm
+on ci.carname = cm.carname
+join reservation as r
+on r.carid = cm.carid
+join users as u
+on u.username = r.username
+where ci.carname = ?;
+
+SELECT * FROM reservation 
+WHERE carid = ? AND ((start_date <= ? AND end_date >= ?) 
+OR (start_date <= ? AND end_date >= ?) OR (start_date >= ? AND end_date <= ?)) ;
+
+
+-- 예약 날짜 변경 쿼리 
+-- (대여일)
+UPDATE reservation
+SET start_date = ?
+WHERE reservation_id = ?;
+
+-- (반납일)
+UPDATE reservation
+SET end_date = ?
+WHERE reservation_id = ?;
+
+-- 예약 차량 변경 
+Update reservation set carid = ?
+where reservation_id = ?;
+
+-- 예약 취소하기
+DELETE from reservation
+WHERE reservation_id = ?;
+
+-- 회원가입
+insert into users(username, password, phonenum, address, email, licenseGrade)
+values (?, ?, ?, ?, ?, ?);
+
+-- 날짜가 정해져 있을 때 변경가능한 차량 목록 조회
+select ci.carname, ci.brand, ci.cartype, ci.puel, ci.needlicence, ci.priceperday
+from carinfo as ci
+join carmanagement as cm
+on ci.carname = cm.carname
+join reservation as r
+on r.carid = cm.carid
+join users as u
+on u.username = r.username
+where r.start_date > ?/*클라이언트가 선택한 빌리는 날짜*/ or r.end_date < ?/*클라이언트가 선택한 반납 날짜*/;
+
+-- 날짜가 정해져 있을 때 그 날짜에 이미 예약되어 있는 차량 조회
+select ci.carname, ci.brand, ci.cartype, ci.puel, ci.needlicence, ci.priceperday
+from carinfo as ci
+join carmanagement as cm
+on ci.carname = cm.carname
+join reservation as r
+on r.carid = cm.carid
+join users as u
+on u.username = r.username
+where r.start_date > ?/*클라이언트가 선택한 빌리는 날짜*/ and r.end_date < ?/*클라이언트가 선택한 반납 날짜*/;
+
+
+-- 날짜랑 차량 이름 받아서 차량 조회로 전환
+update reservation set carid = ? and start_date = ? and end_date = ? 
+where username = ?;
+
+
+select * from users;
+select * from reservation;
+select * from carinfo;
+select * from carmanagement;
+
+select *
+from reservation as r
+join users as u
+on r.username = u.username
+join carmanagement as cm
+on cm.carid = r.carid
+join carinfo as ci
+on cm.carname = ci.carname;
+
 SELECT ri.id, rp.name, cm.carname, ci.cartype, ci.brand, 
 ci.puel , rp.PhoneNum, re.rentDate, re.returnDate, 
-datediff(re.returnDate,re.rentDate)*ci.priceperday as totalprice, ri.pay as paymentOrNot /*결제 여부*/ 
+datediff(re.returnDate, re.rentDate)*ci.priceperday as totalprice, ri.pay as paymentOrNot /*결제 여부*/ 
 from reservationInfo as ri
 join reservationPersonInfo as rp on ri.personid = rp.personid
 join recruittable as re on re.id = ri.id
@@ -223,7 +419,7 @@ values(?, ?, ?, ?);
 
 -- 롤백
 
--- 1.5단계 auto increment 로 생성된 person id를 받아오기 , 재이용객이라면 기생성된 personid 받아오기
+-- 1.5단계 auto increment 로 생성된 person id를 받아오기 , 재이용객이라면 이미 생성된 personid 받아오기
 select reservationpersoninfo.personid
 from reservationpersoninfo
 where phoneNum = ?; 
@@ -236,7 +432,7 @@ values(?,?);
 
 -- 롤백
 
--- 예약 2.5단계 (입력받은 으로 예약 id를 받아옴)
+-- 예약 2.5단계 (입력받은 값으로 예약 id를 받아옴)
 SELECT reservationinfo.id 
 FROM reservationinfo
 WHERE personid = ?
