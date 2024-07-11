@@ -6,13 +6,14 @@ use db_todo2;
 -- users 테이블을 생성 tb_user 등..alter
 create table if not exists users(
 	id int auto_increment primary key,
-    username varchar(50) not null,
+    username varchar(50) not null unique,
     password varchar(255) not null,
     email varchar(100) not null, 
     created_at timestamp default current_timestamp
 );
 
 desc users;
+desc todos;
 alter table users add constraint unique(username);
 
 -- todos 테이블 생성
@@ -41,9 +42,16 @@ INSERT INTO todos (user_id, title, description, due_date, completed) VALUES
 (2, '할 일 3', '할 일 3에 대한 설명입니다.', '2024-02-28', FALSE),
 (3, '할 일 4', '할 일 4에 대한 설명입니다.', '2024-03-10', TRUE);
 
+select * from users where id = 1;
+select '2024-07-11' as mDate;
+
+-- auto_increment 초기화
+truncate table users;
+truncate table todos;
+
+drop table users;
+drop table todos;
+
 select * from users;
 select * from todos;
-
-select * from users where id = 1;
-
 
