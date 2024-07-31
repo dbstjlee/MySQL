@@ -64,6 +64,12 @@ join department_tb as dept on st.dept_id = dept.id
 join stu_stat_tb as stat on st.id = stat.student_id
 where stat.to_date = '9999-01-01' and st.id = 2023000001;
 
+
+select student_id, status, from_date from stu_stat_tb where student_id = 2023000001;
+
+
+
+
 select * from student_tb;
 
 INSERT INTO schedule_tb(staff_id, start_day, end_day, information) values ('230001', '2024-05-06', '2024-05-06', 'DFDFD' );

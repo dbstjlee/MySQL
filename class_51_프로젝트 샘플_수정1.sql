@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS db_greenboard;
-CREATE DATABASE db_greenboard;
-USE db_greenboard;
+DROP DATABASE IF EXISTS github_university_db;
+CREATE DATABASE github_university_db;
+USE github_university_db;
 
 -- 단과대
 CREATE TABLE college_tb
@@ -153,7 +153,7 @@ CREATE TABLE coll_tuit_tb
 CREATE TABLE scholarship_tb
 (
    type INT PRIMARY KEY COMMENT '장학금 유형',
-   max_amount INT NOT NULL COMMENT '최대 지원 금액'
+   max_amount INT NOT NULL COMMENT '지원 비율'
 );
 
 -- 학생별 장학금 유형
@@ -223,7 +223,7 @@ CREATE TABLE stu_stat_tb
 (
    id INT PRIMARY KEY AUTO_INCREMENT,
    student_id INT NOT NULL,
-   status VARCHAR (3) NOT NULL DEFAULT '재학', -- 재학, 휴학, 졸업, 자퇴
+   status VARCHAR (3) NOT NULL DEFAULT '입학', -- 입학, 복학, 휴학, 졸업, 자퇴
    from_date DATE,
    to_date DATE DEFAULT '9999-01-01', -- '9999-01-01' 현재 상태
    description VARCHAR (10),
@@ -306,10 +306,10 @@ FOREIGN KEY (staff_id) REFERENCES staff_tb(id)
 
 -- 학사일정 상태
 create table schedule_state_tb(
-	id int default 1 primary key,
-	break_app boolean default false,
-    sugang boolean default false,
-    tuition boolean default false,
-    year int default 2024, -- 최초 세팅값
+	id int auto_increment primary key,
+	break_app int default 0,
+    sugang int default 0,
+    tuition int default 0,
+    year int default 2023, -- 최초 세팅값
     semester int default 1 -- 최초 세팅값
 );
