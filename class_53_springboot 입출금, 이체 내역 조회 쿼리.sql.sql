@@ -75,7 +75,8 @@ select h.id, h.amount,
 from history_tb as h
 left join account_tb as wa on h.w_account_id = wa.id
 left join account_tb as da on h.d_account_id = da.id
-where h.w_account_id =  1 or h.d_account_id = 1;
+where h.w_account_id =  1 or h.d_account_id = 1
+order by h.created_at DESC;
 
 
 -- when h.w_account_id = 1 then(h.w_balance)
@@ -122,4 +123,35 @@ where h.d_account_id = 1;
 
 -- wa.number, w_account_id == null(ATM이 되어야 함)(보낸이)
 
+select * from account_tb where id = 1;
 
+
+select count(*)
+from history_tb as h
+where h.w_account_id = 1 or h.d_account_id = 1;
+
+
+select count(*)
+			from history_tb as h 
+			where h.d_account_id = 1;
+
+select count(*)
+			from history_tb as h 
+			where h.w_account_id = 1;
+            
+            
+            
+            select h.id, h.amount,
+				case
+					when h.w_account_id = #{accountId} then (h.w_balance) 
+			        when h.d_account_id = #{accountId} then (h.d_balance)
+			    end  as balance,
+			    coalesce(cast(wa.number as char(10)), 'ATM') as sender, 
+			    coalesce(cast(da.number as char(10)), 'ATM') as receiver,
+			    h.created_at
+			from history_tb as h 
+			left join account_tb as wa on h.w_account_id = wa.id
+			left join account_tb as da on h.d_account_id = da.id  
+			where h.w_account_id = #{accountId} OR h.d_account_id = #{accountId}
+			order by h.created_at DESC
+			limit #{limit} offset #{offset}

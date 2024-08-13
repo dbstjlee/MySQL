@@ -59,7 +59,8 @@ SELECT id, name, class, score
 FROM tb_student
 WHERE score > 80
 ORDER BY score DESC
-LIMIT 3; -- 3개 출력
+LIMIT 3; 
+-- 3개 출력
 
 -- offset에 의해 limit(3,10)
 -- 앞에가 offset(시작의 위치), 뒤에가 limit(개수) 가 된다. 
