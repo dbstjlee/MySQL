@@ -47,6 +47,7 @@ insert into notice_tb(categories, title, content, created_at) values('test1', 't
 														
                                                         
 insert into notice_tb(categories, title, content, created_at) values('test1', 'test1', 'test1', now());                                           
+insert into notice_tb(categories, title, content, created_at) values('1', '1', '1', now());                                           
                                                                     
 SELECT * FROM notice_tb;
 UPDATE notice_tb SET categories = 'test4', title = 'test4', content = 'test4' where id = 3;
@@ -54,6 +55,27 @@ DELETE FROM notice_tb WHERE id = 3;
 
 SELECT * FROM notice_tb ORDER BY id limit 4 offset 0;
 SELECT count(*) AS count FROM notice_tb;
+
+
+SELECT * FROM notice_tb;
+-- 조회수 상승
+UPDATE notice_tb SET views = views +1 where id = 1;
+
+SELECT * FROM notice_tb WHERE categories LIKE '1' ORDER BY id DESC limit 4 offset 0;
+SELECT COUNT(*) AS count FROM notice_tb WHERE categories LIKE '1' ORDER BY id DESC limit 4 offset 0;
+
+
+SELECT * FROM notice_tb WHERE title AND content LIKE '1' ORDER BY id DESC limit 4 offset 0;
+SELECT COUNT(*) AS count FROM notice_tb WHERE title AND content LIKE '1' ORDER BY id DESC limit 4 offset 0;
+
+SELECT * FROM notice_tb WHERE title LIKE '1' ORDER BY id DESC limit 4 offset 0;
+SELECT COUNT(*) AS count WHERE title LIKE '1' ORDER BY id DESC limit 4 offset 0;
+
+
+SELECT count(*) AS count FROM notice_tb WHERE title AND content LIKE ? ;
+
+
+
 
 select * from user_withdraw_tb;
 
