@@ -134,11 +134,74 @@ FROM user_tb
 GROUP BY YEAR(created_at), MONTH(created_at)
 ORDER BY year, month;
 
+-- 남/여 수
+SELECT user_gender, COUNT(*) AS COUNT FROM user_tb GROUP BY user_gender;
+
+-- 남/여 성비(보류)
+SELECT SUM(CASE WHEN user_gender = '남성' THEN 1 ELSE 0 END) / SUM(CASE WHEN user_gender = '여성' THEN 1 ELSE 0 END)
+AS male_female_ratio FROM user_tb;
+-- 남성 : 여성 = 0.4 : 1
+
+select * from payment_tb;
+select * from refund_tb;
+select * from admin_tb;
+
+-- 소셜 로그인 타입
+SELECT social_type AS socialType, COUNT(*) AS count FROM user_tb GROUP BY social_type;
 
 
+delete from user_tb where id = 73;
+select * from user_tb;
+
+select user_birth from user_tb;
+select YEAR(user_birth) AS year, COUNT(*) AS userCount from user_tb
+GROUP BY YEAR(user_birth);
 
 
+SELECT CASE 
+        WHEN YEAR(CURDATE()) - YEAR(user_birth) < 10 THEN '10대 미만'
+        WHEN YEAR(CURDATE()) - YEAR(user_birth) BETWEEN 10 AND 19 THEN '10대'
+        WHEN YEAR(CURDATE()) - YEAR(user_birth) BETWEEN 20 AND 29 THEN '20대'
+        WHEN YEAR(CURDATE()) - YEAR(user_birth) BETWEEN 30 AND 39 THEN '30대'
+        WHEN YEAR(CURDATE()) - YEAR(user_birth) BETWEEN 40 AND 49 THEN '40대'
+        WHEN YEAR(CURDATE()) - YEAR(user_birth) >= 50 THEN '50대 이상'
+        ELSE '연령 불명'
+    END AS age, COUNT(*) AS count FROM user_tb 
+    WHERE social_type = 'naver'
+    GROUP BY age ORDER BY FIELD(age, '10대 미만', '10대', '20대', '30대', '40대', '50대 이상');
 
+
+create table age_order(
+	id int primary key auto_increment,
+    age_group varchar(30)
+);
+drop table age_order;
+
+
+INSERT INTO age_order (age_group) VALUES
+    ('10대 미만'),
+    ('10대'),
+    ('20대'),
+    ('30대'),
+    ('40대'),
+    ('50대 이상'),
+    ('연령 불명');
+    
+select * from age_order;
+SELECT id FROM age_order WHERE age_order.age_group = age_group;
+
+		SELECT CASE 
+        WHEN YEAR(CURDATE()) - YEAR(user_birth) < 10 THEN '10대 미만'
+        WHEN YEAR(CURDATE()) - YEAR(user_birth) BETWEEN 10 AND 19 THEN '10대'
+        WHEN YEAR(CURDATE()) - YEAR(user_birth) BETWEEN 20 AND 29 THEN '20대'
+        WHEN YEAR(CURDATE()) - YEAR(user_birth) BETWEEN 30 AND 39 THEN '30대'
+        WHEN YEAR(CURDATE()) - YEAR(user_birth) BETWEEN 40 AND 49 THEN '40대'
+        WHEN YEAR(CURDATE()) - YEAR(user_birth) <= 50 THEN '50대 이상'
+        ELSE '연령 불명'
+    END AS age, COUNT(*) AS count FROM user_tb 
+    WHERE social_type = 'naver' GROUP BY age
+    ORDER BY 
+    (SELECT id FROM age_order WHERE age_order.age_group = age_group);
 
 
 
