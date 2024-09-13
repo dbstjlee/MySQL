@@ -10,10 +10,14 @@ user_nickname    varchar(20),
 user_email    varchar(255)    NOT NULL     unique,
 user_birth    varchar(100)    NOT NULL,
 user_gender enum('남성','여성','설정안함'),
-user_tel    varchar(13),
+user_tel    varchar(13) not null,
 created_at timestamp default now() not null,
 social_type varchar(30) not null
 );
+
+
+desc user_tb;
+
 select * from user_tb;
 -- drop table user_tb;
 
@@ -63,6 +67,10 @@ SELECT u.id, u.user_name AS username, u.user_id AS userId, u.user_email AS userE
 		FROM user_tb AS u
 		LEFT JOIN payment_tb AS p ON u.id = p.user_id 
 ORDER BY id DESC limit 10 offset 0; 
+select * from payment_tb;
+select * from subscribing_tb;
+desc subscribing_tb;
+
 
 -- 회원 정보 수정
 update user_tb set user_name = '조연희', user_nickname ='yeun1234', user_birth = '1991-12-07', user_gender = '여성', user_tel = '010-1233-4569'
@@ -119,90 +127,111 @@ select * from withdraw_reason_tb;
 desc withdraw_reason_tb;
 create table withdraw_reason_tb(
 	id int auto_increment primary key,
-    reason varchar(255) not null
+    user_id varchar(255) not null,
+    reason varchar(255) not null,
+	reason_detail varchar(255)
 );
-drop table withdraw_reason_tb;
+desc withdraw_reason_tb;
+select * from withdraw_reason_tb;
+insert into withdraw_reason_tb(user_id, reason, reason_detail) values
+('Seoyeon1', '멤버십이 마음에 들지 않아요.', null),
+('Jihoon9', '사이트를 자주 방문하지 않아요.', null),
+('Minjun7', '멤버십이 마음에 들지 않아요.', null),
+('Jimin4', '가격이 비싸요.', null),
+('Woosung2', '멤버십이 마음에 들지 않아요.', null),
+('Yujin3', '기타 사유', 'test1'),
+('Sungyeon5', '기타 사유', 'test2'),
+('Haneul6', '기타 사유', 'test3'),
+('Dongwon8', '기타 사유', 'test4'),
+('Jiyoung7', '기타 사유', 'test5'),
+('Taehun9', '사이트를 자주 방문하지 않아요.', null),
+('Areum1', '사이트를 자주 방문하지 않아요.', null),
+('Hankil2', '기타 사유', 'test6'),
+('Seojin3', '사이트를 자주 방문하지 않아요.', null),
+('Minhyuk4', '가격이 비싸요.', null),
+('Sumin5', '가격이 비싸요.', null),
+('Dohyeon7', '기타 사유', 'test7'),
+('Hayoung6', '새 계정을 만들고 싶어요.', null),
+('Eunji8', '새 계정을 만들고 싶어요.', null),
+('Junho9', '가격이 비싸요.', null);
 
-insert into withdraw_reason_tb(reason) values
-('새 계정을 만들고 싶어요.'),
-('사이트를 자주 방문하지 않아요.'),
-('멤버십이 마음에 들지 않아요.'),
-('가격이 비싸요.'),
-('기타(추가 입력)');
+
+-- ('새 계정을 만들고 싶어요.'),
+-- ('사이트를 자주 방문하지 않아요.'),
+-- ('멤버십이 마음에 들지 않아요.'),
+-- ('가격이 비싸요.'),
+-- ('기타(추가 입력)');
 
 select * from withdraw_reason_tb;
-
 select * from user_withdraw_tb;
--- drop table user_withdraw_tb;
+
+SELECT * FROM user_withdraw_tb
+WHERE withdraw_at < NOW() - INTERVAL 3 YEAR;
+
+
 
 
 CREATE TABLE user_withdraw_tb(
 id int auto_increment primary key,
 user_name varchar(255) not null,
-user_id varchar(255) not null unique,
+user_id varchar(255) not null,
 user_password varchar(255) NOT NULL,
 user_nickname    varchar(20),
-user_email    varchar(255)    NOT NULL     unique,
-user_birth    varchar(100)    NOT NULL,
+user_email    varchar(255)    NOT NULL,
+user_birth    varchar(255)    NOT NULL,
 user_gender enum('남성','여성','설정안함'),
-user_tel    varchar(13),
+user_tel    varchar(13) not null,
 created_at varchar(30) not null,
 social_type varchar(30) not null,
-withdraw_at timestamp default now() not null,
-reason_id int
+withdraw_at timestamp default now() not null
 );
-SELECT user_gender AS gender, COUNT(*) AS count FROM
-		user_tb GROUP BY user_gender;
 
--- drop table user_withdraw_tb;
-
-INSERT INTO  user_withdraw_tb(user_name, user_id, user_password, user_nickname, user_email, user_birth, user_gender, user_tel, social_type, created_at, withdraw_at, reason_id) VALUES
-('이서연', 'Seoyeon1', 'Seoyeon1*', 'Seoyeon1', 'Seoyeon1@kakao.com', '1997-01-05', '여성', '010-1145-5678', 'kakao', '2024-01-05 14:23:45', '2024-01-10 09:15:30', 1),
-('박지훈', 'Jihoon9', 'Jihoon9*', 'Jihoon9', 'Jihoon9@naver.com', '1998-01-11', '남성', '010-2345-6789', 'naver', '2024-02-14 11:00:00', '2024-02-20 16:30:10', 2),
-('김민준', 'Minjun7', 'Minjun7*', 'Minjun7', 'Minjun7@gmail.com', '1991-01-19', '남성', '010-3456-7890', 'google', '2024-03-25 10:10:15', '2024-03-30 18:20:55', 3),
-('한지민', 'Jimin4', 'Jimin4!', 'Jimin4', 'Jimin4@naver.com', '1990-01-25', '여성', '010-4567-8901', 'local', '2024-04-12 13:32:10', '2024-04-15 14:22:33', 4),
-('정우성', 'Woosung2', 'Woosung2*', 'Woosung2', 'Woosung2@kakao.com', '1980-01-30', '설정안함', '010-5678-9012', 'kakao', '2024-05-03 08:45:25', '2024-05-08 13:05:40', 5),
-('최유진', 'Yujin3', 'Yujin3*', 'Yujin3', 'Yujin3@naver.com', '1970-02-01', '여성', '010-6789-0123', 'naver', '2024-06-21 09:55:10', '2024-06-25 17:15:30', 1),
-('조성현', 'Sungyeon5', 'Sungyeon5*', 'Sungyeon5', 'Sungyeon5@gmail.com', '1990-02-08', '남성', '010-7890-1234', 'google', '2024-07-10 12:22:05', '2024-07-15 08:00:50', 2),
-('송하늘', 'Haneul6', 'Haneul6!', 'Haneul6', 'Haneul6@naver.com', '2000-02-14', '설정안함', '010-8901-2345', 'local', '2024-08-02 15:00:00', '2024-08-10 20:20:00', 3),
-('강동원', 'Dongwon8', 'Dongwon8*', 'Dongwon8', 'Dongwon8@kakao.com', '2001-02-22', '남성', '010-9012-3456', 'kakao', '2024-08-20 16:18:30', '2024-08-25 19:45:10', 4),
-('오지영', 'Jiyoung7', 'Jiyoung7*', 'Jiyoung7', 'Jiyoung7@naver.com', '2004-02-28', '여성', '010-0123-4567', 'naver', '2024-09-01 10:30:15', '2024-09-05 21:30:25', 5),
-('임태훈', 'Taehun9', 'Taehun9*', 'Taehun9', 'Taehun9@gmail.com', '1995-03-02', '남성', '010-7778-9988', 'google', '2024-01-12 15:45:45', '2024-01-20 11:00:20', 1),
-('윤아름', 'Areum1', 'Areum1!', 'Areum1', 'Areum1@naver.com', '1996-03-08', '설정안함', '010-4456-7753', 'local', '2024-02-05 10:55:10', '2024-02-10 07:50:30', 2),
-('류한길', 'Hankil2', 'Hankil2*', 'Hankil2', 'Hankil2@kakao.com', '1995-03-15', '여성', '010-8824-7890', 'kakao', '2024-03-18 12:20:05', '2024-03-25 15:30:25', 3),
-('문서진', 'Seojin3', 'Seojin3*', 'Seojin3', 'Seojin3@naver.com', '1996-03-21', '남성', '010-0035-8901', 'naver', '2024-04-01 11:55:30', '2024-04-08 13:40:15', 4),
-('서민혁', 'Minhyuk4', 'Minhyuk4*', 'Minhyuk4', 'Minhyuk4@gmail.com', '1999-03-29', '설정안함', '010-9950-9012', 'google', '2024-05-10 08:25:10', '2024-05-20 14:00:30', 5),
-('한수민', 'Sumin5', 'Sumin5!', 'Sumin5', 'Sumin5@gmail.com', '1999-04-02', '여성', '010-3364-0123', 'local', '2024-06-15 14:10:55', '2024-06-20 16:30:10', 1),
-('김도현', 'Dohyeon7', 'Dohyeon7*', 'Dohyeon7', 'Dohyeon7@kakao.com', '1983-04-10', '남성', '010-9924-7865', 'kakao', '2024-07-05 09:30:25', '2024-07-12 12:45:55', 2),
-('강하영', 'Hayoung6', 'Hayoung6*', 'Hayoung6', 'Hayoung6@naver.com', '1985-04-15', '설정안함', '010-1123-9987', 'naver', '2024-08-10 10:15:20', '2024-08-15 15:55:00', 3),
-('장은지', 'Eunji8', 'Eunji8*', 'Eunji8', 'Eunji8@gmail.com', '1973-04-22', '여성', '010-4532-8875', 'google', '2024-09-01 14:00:00', '2024-09-03 17:20:10', 4),
-('이준호', 'Junho9', 'Junho9!', 'Junho9', 'Junho9@gmail.com', '1972-04-28', '남성', '010-6657-9980', 'local', '2024-09-05 11:35:45', '2024-09-10 18:05:30', 5);
-
-
-
-
-
-select user_name, w.user_id, user_password, user_nickname, user_email, user_birth, user_gender, user_tel, social_type, created_at, withdraw_at, reason_id, reason, d.reason_detail 
-from user_withdraw_tb AS w
-join withdraw_reason_tb AS r on w.reason_id = r.id
-join reason_detail AS d on w.user_id = d.user_id;  
-
-create table reason_detail(
-	id int auto_increment primary key,
-    user_id varchar(255),
-	reason_detail varchar(255)
-);
--- drop table reason_detail;
-
-insert into reason_detail(user_id, reason_detail) values
-('Woosung2', 'test1'),
-('Jiyoung7', 'test2'),
-('Minhyuk4', 'test3'),
-('Junho9', 'test4'); 
-
-select * from reason_detail;
 
 desc user_withdraw_tb;
+drop table user_withdraw_tb;
+
+INSERT INTO  user_withdraw_tb(user_name, user_id, user_password, user_nickname, user_email, user_birth, user_gender, user_tel, social_type, created_at, withdraw_at) VALUES
+('이서연', 'Seoyeon1', 'Seoyeon1*', 'Seoyeon1', 'Seoyeon1@kakao.com', '1997-01-05', '여성', '010-1145-5678', 'kakao', '2024-01-05 14:23:45', '2024-01-12 09:15:30'),
+('박지훈', 'Jihoon9', 'Jihoon9*', 'Jihoon9', 'Jihoon9@naver.com', '1998-01-11', '남성', '010-2345-6789', 'naver', '2024-02-14 11:00:00', '2024-02-13 16:30:10'),
+('김민준', 'Minjun7', 'Minjun7*', 'Minjun7', 'Minjun7@gmail.com', '1991-01-19', '남성', '010-3456-7890', 'google', '2024-03-25 10:10:15', '2024-03-14 18:20:55'),
+('한지민', 'Jimin4', 'Jimin4!', 'Jimin4', 'Jimin4@naver.com', '1990-01-25', '여성', '010-4567-8901', 'local', '2024-04-12 13:32:10', '2024-04-15 14:22:33'),
+('정우성', 'Woosung2', 'Woosung2*', 'Woosung2', 'Woosung2@kakao.com', '1980-01-30', '설정안함', '010-5678-9012', 'kakao', '2024-05-03 08:45:25', '2024-05-08 13:05:40'),
+('최유진', 'Yujin3', 'Yujin3*', 'Yujin3', 'Yujin3@naver.com', '1970-02-01', '여성', '010-6789-0123', 'naver', '2024-06-21 09:55:10', '2024-06-25 17:15:30'),
+('조성현', 'Sungyeon5', 'Sungyeon5*', 'Sungyeon5', 'Sungyeon5@gmail.com', '1990-02-08', '남성', '010-7890-1234', 'google', '2024-07-10 12:22:05', '2024-07-15 08:00:50'),
+('송하늘', 'Haneul6', 'Haneul6!', 'Haneul6', 'Haneul6@naver.com', '2000-02-14', '설정안함', '010-8901-2345', 'local', '2024-08-02 15:00:00', '2024-08-10 20:20:00'),
+('강동원', 'Dongwon8', 'Dongwon8*', 'Dongwon8', 'Dongwon8@kakao.com', '2001-02-22', '남성', '010-9012-3456', 'kakao', '2024-08-20 16:18:30', '2024-08-25 19:45:10'),
+('오지영', 'Jiyoung7', 'Jiyoung7*', 'Jiyoung7', 'Jiyoung7@naver.com', '2004-02-28', '여성', '010-0123-4567', 'naver', '2024-09-01 10:30:15', '2024-09-05 21:30:25'),
+('임태훈', 'Taehun9', 'Taehun9*', 'Taehun9', 'Taehun9@gmail.com', '1995-03-02', '남성', '010-7778-9988', 'google', '2024-01-12 15:45:45', '2024-01-20 11:00:20'),
+('윤아름', 'Areum1', 'Areum1!', 'Areum1', 'Areum1@naver.com', '1996-03-08', '설정안함', '010-4456-7753', 'local', '2024-02-05 10:55:10', '2024-02-10 07:50:30'),
+('류한길', 'Hankil2', 'Hankil2*', 'Hankil2', 'Hankil2@kakao.com', '1995-03-15', '여성', '010-8824-7890', 'kakao', '2024-03-18 12:20:05', '2024-03-25 15:30:25'),
+('문서진', 'Seojin3', 'Seojin3*', 'Seojin3', 'Seojin3@naver.com', '1996-03-21', '남성', '010-0035-8901', 'naver', '2024-04-01 11:55:30', '2024-04-08 13:40:15'),
+('서민혁', 'Minhyuk4', 'Minhyuk4*', 'Minhyuk4', 'Minhyuk4@gmail.com', '1999-03-29', '설정안함', '010-9950-9012', 'google', '2024-05-10 08:25:10', '2024-05-20 14:00:30'),
+('한수민', 'Sumin5', 'Sumin5!', 'Sumin5', 'Sumin5@gmail.com', '1999-04-02', '여성', '010-3364-0123', 'local', '2024-06-15 14:10:55', '2024-06-20 16:30:10'),
+('김도현', 'Dohyeon7', 'Dohyeon7*', 'Dohyeon7', 'Dohyeon7@kakao.com', '1983-04-10', '남성', '010-9924-7865', 'kakao', '2024-07-05 09:30:25', '2024-07-12 12:45:55'),
+('강하영', 'Hayoung6', 'Hayoung6*', 'Hayoung6', 'Hayoung6@naver.com', '1985-04-15', '설정안함', '010-1123-9987', 'naver', '2024-08-10 10:15:20', '2024-08-15 15:55:00'),
+('장은지', 'Eunji8', 'Eunji8*', 'Eunji8', 'Eunji8@gmail.com', '1973-04-22', '여성', '010-4532-8875', 'google', '2024-09-01 14:00:00', '2024-09-03 17:20:10'),
+('이준호', 'Junho9', 'Junho9!', 'Junho9', 'Junho9@gmail.com', '1972-04-28', '남성', '010-6657-9980', 'local', '2024-09-05 11:35:45', '2024-09-10 18:05:30');
+
+
+
+
+
+
+
+select w.id, user_name, w.user_id, user_email, created_at, withdraw_at, reason, reason_detail 
+from user_withdraw_tb AS w
+left join withdraw_reason_tb AS r on w.user_id = r.user_id
+order by w.id desc;
+
+select w.id, user_name, w.user_id, user_password, user_nickname, user_email, user_birth, user_gender, user_tel, social_type, created_at, withdraw_at, reason, reason_detail 
+from user_withdraw_tb AS w
+left join withdraw_reason_tb AS r on w.user_id = r.user_id
+order by w.id desc;
+
+SELECT COUNT(*) FROM user_withdraw_tb;
+
+desc withdraw_reason_tb;
+
 
 
 -- ----------------------------------------------------------
