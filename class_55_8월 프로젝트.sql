@@ -517,6 +517,27 @@ insert into co_bookmark(com_id, user_id)
 values(40, 27);
 select * from co_bookmark;
 
+-- ------------------------------------------------------------------
+select * from test;
+
+
+
+-- payment 통계
+select * from payment_tb; -- 결제
+select * from order_tb; -- 결제 실패 시 키 값 저장을 위함
+select * from refund_tb; -- 환불
+select * from subscribing_tb; -- 구독 중이면 Y, 구독X - N 
+select * from termin_reason_tb; -- 구독 해지 사유(예정)
+select * from withdraw_reason_tb; 
+
+select * from subscribing_tb WHERE subscribing = 'Y'; -- 임시(매일 3시에 자동 결제)  --> count 해서 구독중인 사용자만 조회
+-- > 월 구독자 수(구독 유지 중 - Y)
+select COUNT(*) AS count from subscribing_tb WHERE subscribing = 'Y';
+
+
+
+SELECT count(*) FROM payment_tb; -- 총 결제 수
+
 
 
 
