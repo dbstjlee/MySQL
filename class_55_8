@@ -492,9 +492,34 @@ id int auto_increment primary key,
 insert into co_bookmark(com_id, user_id)
 values(40, 27);
 select * from co_bookmark;
+select * from co_goods_tb;
+select * from co_payment_history_tb;
+select * from co_proposal;
+
+select * from advertiser;
+select * from ad_application;
+select * from ad_refund_tb;
+select * from ad_payment_tb;
+select * from ad_request_refund_tb;
+select * from refund_tb;
+SELECT SUM(cancel_amount) FROM refund_tb;
+
+SELECT sum(refundAmount) AS amount FROM ad_request_refund_tb;
+SELECT SUM(amount) FROM subscribing_tb;
+SELECT * FROM subscribing_tb;
+SELECT YEAR(created_at) AS year, MONTH(created_at) AS month, DAY(created_at) AS DAY, SUM(amount) AS totalAmount FROM subscribing_tb GROUP BY YEAR(created_at), MONTH(created_at), DAY(created_at);
 
 
 
+
+-- 결제 내역 조회
+
+select * from payment_tb;
+
+select * from refund_tb;
+
+select p.id, p.user_id, u.user_id, u.user_name, p.order_name, p.total_amount, p.requested_at, p.approved_at from payment_tb as p
+join user_tb as u on u.id = p.user_id;
 
 
 

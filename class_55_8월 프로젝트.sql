@@ -252,30 +252,6 @@ SELECT COUNT(*) FROM user_withdraw_tb;
 desc withdraw_reason_tb;
 
 
-SELECT w.id, w.user_id,
-		created_at, withdraw_at, reason,
-		reason_detail
-		FROM user_withdraw_tb AS w
-		JOIN withdraw_reason_tb AS r ON
-		w.user_id = r.user_id
-		WHERE r.reason ='기타 사유'
-		ORDER BY r.id DESC;
-        
-        SELECT w.id, w.user_id,
-		created_at, withdraw_at, reason,
-		reason_detail
-		FROM user_withdraw_tb AS w
-		left join withdraw_reason_tb AS
-		r on w.user_id =
-		r.user_id
-		order by
-		w.id DESC;
-
-SELECT reason, COUNT(*) AS count
-        FROM withdraw_reason_tb
-        GROUP BY reason;
-
-
 
 -- ----------------------------------------------------------
 -- 공지사항
@@ -516,32 +492,36 @@ id int auto_increment primary key,
 insert into co_bookmark(com_id, user_id)
 values(40, 27);
 select * from co_bookmark;
+select * from co_goods_tb;
+select * from co_payment_history_tb;
+select * from co_proposal;
 
--- ------------------------------------------------------------------
-select * from test;
+select * from advertiser;
+select * from ad_application;
+select * from ad_refund_tb;
+select * from ad_payment_tb;
+select * from ad_request_refund_tb;
+select * from refund_tb;
+SELECT SUM(cancel_amount) FROM refund_tb;
 
-
-
--- payment 통계
-select * from payment_tb; -- 결제
-select * from order_tb; -- 결제 실패 시 키 값 저장을 위함
-select * from refund_tb; -- 환불
-select * from subscribing_tb; -- 구독 중이면 Y, 구독X - N 
-select * from termin_reason_tb; -- 구독 해지 사유(예정)
-select * from withdraw_reason_tb; 
-
-select * from subscribing_tb WHERE subscribing = 'Y'; -- 임시(매일 3시에 자동 결제)  --> count 해서 구독중인 사용자만 조회
--- > 월 구독자 수(구독 유지 중 - Y)
-select COUNT(*) AS count from subscribing_tb WHERE subscribing = 'Y';
-
-
-
-SELECT count(*) FROM payment_tb; -- 총 결제 수
+SELECT sum(refundAmount) AS amount FROM ad_request_refund_tb;
+SELECT SUM(amount) FROM subscribing_tb;
+SELECT * FROM subscribing_tb;
+SELECT YEAR(created_at) AS year, MONTH(created_at) AS month, DAY(created_at) AS DAY, SUM(amount) AS totalAmount FROM subscribing_tb GROUP BY YEAR(created_at), MONTH(created_at), DAY(created_at);
 
 
 
 
+-- 결제 내역 조회
+
+select * from payment_tb;
+
+select * from refund_tb;
+
+select p.id, p.user_id, u.user_id, u.user_name, p.order_name, p.total_amount, p.requested_at, p.approved_at from payment_tb as p
+join user_tb as u on u.id = p.user_id;
 
 
+select * from user_withdraw_tb;
 
 
